@@ -49,7 +49,7 @@ int main(int argc, const char * argv[]) {
 //        cin >> path;
 //        cout << endl;
     //    }
-    path = "/Users/matthieudelaro/Documents/classes/L3/S5/theorie_des_graphes/TP/tp32/Haffreingue-de_La_Roche_Saint_Andre-EFREI-L3-TG-TP3-2.txt";
+    path = "/Users/matthieudelaro/Documents/classes/L3/S5/theorie_des_graphes/TP/tp33/Haffreingue-de_La_Roche_Saint_Andre-EFREI-L3-TG-TP3-5.txt";
     
     
     int size = 0; //size of adjacency matrix and of Bellman's matrix
@@ -275,80 +275,124 @@ bool cycle(const vector<vector<AdjCell> > &adjMatrix, int size) {
     }
 }
 
+//// return an ordered array of links of the graph
+//vector<Link> getSortedLinkList(AdjCell** adjMatrix, int size) {
+//    vector<Link> out;
+//    
+//    // 2D array used to say whether a link has been used/recorded
+//    vector< vector<bool> > used(size);
+//    for (int i = 0; i < size; ++i) {
+//        used[i].resize(size, false);
+//    }
+//    
+//    // retrieve quantity of links and minimal weight
+//    int quantity = 0;
+//    bool foundMinimal = false;
+//    Link minimal;
+//    for (int i = 0; i < size; ++i) {
+//        for (int j = i; j < size; ++j) {
+//            if (adjMatrix[i][j].valid) {
+//                quantity++;
+//                if (!foundMinimal) {
+//                    minimal.value = adjMatrix[i][j].value;
+//                    minimal.edge1 = i;
+//                    minimal.edge2 = j;
+//                    
+//                    foundMinimal = true;
+//                } else if (adjMatrix[i][j].value < minimal.value) {
+//                    minimal.value = adjMatrix[i][j].value;
+//                    minimal.edge1 = i;
+//                    minimal.edge2 = j;
+//                }
+//            }
+//        }
+//    }
+//    
+//    if (quantity > 0) {// Retrieve ordered array
+//        out.resize(quantity);
+//        out[0] = minimal;
+//        int nextIndex = 1;
+//        used[minimal.edge1][minimal.edge2] = true;
+//        
+//        while (nextIndex < quantity) {
+//            foundMinimal = false;
+//            for (int i = 0; i < size; ++i) {
+//                for (int j = i; j < size; ++j) {
+//                    if (adjMatrix[i][j].valid && !used[i][j]) {
+//                        if (!foundMinimal) {
+//                            minimal.value = adjMatrix[i][j].value;
+//                            minimal.edge1 = i;
+//                            minimal.edge2 = j;
+//                            
+//                            foundMinimal = true;
+//                        } else if (adjMatrix[i][j].value < minimal.value) {
+//                            minimal.value = adjMatrix[i][j].value;
+//                            minimal.edge1 = i;
+//                            minimal.edge2 = j;
+//                            quantity++;
+//                        }
+//                    }
+//                }
+//            }
+//            
+//            used[minimal.edge1][minimal.edge2] = true;
+//            out[nextIndex] = minimal;
+//            nextIndex++;
+//        }
+//    }
+//    
+////    for (int j = 0; j < out.size(); ++j) {
+////        cout << out[j].edge1 << " " << out[j].edge2 << " " << out[j].value << endl;
+////    }
+//    return out;
+//}
+
 // return an ordered array of links of the graph
 vector<Link> getSortedLinkList(AdjCell** adjMatrix, int size) {
-    vector<Link> out;
+    vector<Link> unorderedArray(size*size);
+    int quantity = 0; // quantity of links found in adjacency matrix
     
-    // 2D array used to say whether a link has been used/recorded
-    vector< vector<bool> > used(size);
-    for (int i = 0; i < size; ++i) {
-        used[i].resize(size, false);
-    }
-    
-    // retrieve quantity of links and minimal weight
-    int quantity = 0;
-    bool foundMinimal = false;
-    Link minimal;
+    // retrieve quantity of links, minimal weight, and store every link in unorderedArray
     for (int i = 0; i < size; ++i) {
         for (int j = i; j < size; ++j) {
             if (adjMatrix[i][j].valid) {
+                unorderedArray[quantity].value = adjMatrix[i][j].value;
+                unorderedArray[quantity].edge1 = i;
+                unorderedArray[quantity].edge2 = j;
                 quantity++;
+            }
+        }
+    }
+    unorderedArray.resize(quantity);
+    
+    // copy links from unorderedArray to out (which is to become an ordered array)
+    vector<bool> inOrderedArray(quantity, false);
+    vector<Link> out(quantity);
+    int minimalIndex = 0; // index in array out where the minimal link is stored
+    for (int i = 0; i < quantity; ++i) {
+        bool foundMinimal = false;
+        for (int j = 0; j < quantity; ++j) {
+            if (!inOrderedArray[j]){
                 if (!foundMinimal) {
-                    minimal.value = adjMatrix[i][j].value;
-                    minimal.edge1 = i;
-                    minimal.edge2 = j;
-                    
+                    minimalIndex = j;
                     foundMinimal = true;
-                } else if (adjMatrix[i][j].value < minimal.value) {
-                    minimal.value = adjMatrix[i][j].value;
-                    minimal.edge1 = i;
-                    minimal.edge2 = j;
+                } else if (unorderedArray[j].value <= unorderedArray[minimalIndex].value) {
+                    minimalIndex = j;
                 }
             }
         }
+        out[i].value = unorderedArray[minimalIndex].value;
+        out[i].edge1 = unorderedArray[minimalIndex].edge1;
+        out[i].edge2 = unorderedArray[minimalIndex].edge2;
+        inOrderedArray[minimalIndex] = true;
     }
-    
-    if (quantity > 0) {// Retrieve ordered array
-        out.resize(quantity);
-        out[0] = minimal;
-        int nextIndex = 1;
-        used[minimal.edge1][minimal.edge2] = true;
-        
-        while (nextIndex < quantity) {
-            foundMinimal = false;
-            for (int i = 0; i < size; ++i) {
-                for (int j = i; j < size; ++j) {
-                    if (adjMatrix[i][j].valid && !used[i][j]) {
-                        if (!foundMinimal) {
-                            minimal.value = adjMatrix[i][j].value;
-                            minimal.edge1 = i;
-                            minimal.edge2 = j;
-                            
-                            foundMinimal = true;
-                        } else if (adjMatrix[i][j].value < minimal.value) {
-                            minimal.value = adjMatrix[i][j].value;
-                            minimal.edge1 = i;
-                            minimal.edge2 = j;
-                            quantity++;
-                        }
-                    }
-                }
-            }
-            
-            used[minimal.edge1][minimal.edge2] = true;
-            out[nextIndex] = minimal;
-            nextIndex++;
-        }
-    }
-    
-//    for (int j = 0; j < out.size(); ++j) {
-//        cout << out[j].edge1 << " " << out[j].edge2 << " " << out[j].value << endl;
-//    }
     return out;
 }
 
+
 // generate adjacency matrix based on an array of links
 void generateAdjMatrix(vector<Link> linkArray, vector<vector<AdjCell> > &adjMatrix, int size) {
+    // initialise adjMatrix to the right size, with invalid cells
     AdjCell init;
     init.valid = false;
     adjMatrix.resize(size);
@@ -359,6 +403,7 @@ void generateAdjMatrix(vector<Link> linkArray, vector<vector<AdjCell> > &adjMatr
         }
     }
     
+    // add links one after another, twice : back and forth (for the graph is not oriented)
     for (int i = 0; i < linkArray.size(); ++i) {
         adjMatrix[linkArray[i].edge1][linkArray[i].edge2].valid = true;
         adjMatrix[linkArray[i].edge1][linkArray[i].edge2].value = linkArray[i].value;
