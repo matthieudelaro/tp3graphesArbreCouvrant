@@ -275,78 +275,6 @@ bool cycle(const vector<vector<AdjCell> > &adjMatrix, int size) {
     }
 }
 
-//// return an ordered array of links of the graph
-//vector<Link> getSortedLinkList(AdjCell** adjMatrix, int size) {
-//    vector<Link> out;
-//    
-//    // 2D array used to say whether a link has been used/recorded
-//    vector< vector<bool> > used(size);
-//    for (int i = 0; i < size; ++i) {
-//        used[i].resize(size, false);
-//    }
-//    
-//    // retrieve quantity of links and minimal weight
-//    int quantity = 0;
-//    bool foundMinimal = false;
-//    Link minimal;
-//    for (int i = 0; i < size; ++i) {
-//        for (int j = i; j < size; ++j) {
-//            if (adjMatrix[i][j].valid) {
-//                quantity++;
-//                if (!foundMinimal) {
-//                    minimal.value = adjMatrix[i][j].value;
-//                    minimal.edge1 = i;
-//                    minimal.edge2 = j;
-//                    
-//                    foundMinimal = true;
-//                } else if (adjMatrix[i][j].value < minimal.value) {
-//                    minimal.value = adjMatrix[i][j].value;
-//                    minimal.edge1 = i;
-//                    minimal.edge2 = j;
-//                }
-//            }
-//        }
-//    }
-//    
-//    if (quantity > 0) {// Retrieve ordered array
-//        out.resize(quantity);
-//        out[0] = minimal;
-//        int nextIndex = 1;
-//        used[minimal.edge1][minimal.edge2] = true;
-//        
-//        while (nextIndex < quantity) {
-//            foundMinimal = false;
-//            for (int i = 0; i < size; ++i) {
-//                for (int j = i; j < size; ++j) {
-//                    if (adjMatrix[i][j].valid && !used[i][j]) {
-//                        if (!foundMinimal) {
-//                            minimal.value = adjMatrix[i][j].value;
-//                            minimal.edge1 = i;
-//                            minimal.edge2 = j;
-//                            
-//                            foundMinimal = true;
-//                        } else if (adjMatrix[i][j].value < minimal.value) {
-//                            minimal.value = adjMatrix[i][j].value;
-//                            minimal.edge1 = i;
-//                            minimal.edge2 = j;
-//                            quantity++;
-//                        }
-//                    }
-//                }
-//            }
-//            
-//            used[minimal.edge1][minimal.edge2] = true;
-//            out[nextIndex] = minimal;
-//            nextIndex++;
-//        }
-//    }
-//    
-////    for (int j = 0; j < out.size(); ++j) {
-////        cout << out[j].edge1 << " " << out[j].edge2 << " " << out[j].value << endl;
-////    }
-//    return out;
-//}
-
 // return an ordered array of links of the graph
 vector<Link> getSortedLinkList(AdjCell** adjMatrix, int size) {
     vector<Link> unorderedArray(size*size);
@@ -419,12 +347,13 @@ void coveringTree(AdjCell** adjMatrix, int size, vector<vector<AdjCell> > &adjMa
     vector<Link> links = getSortedLinkList(adjMatrix, size);
 
     vector<Link> tree;
-    // add links one after another. Checks cycle presence. Revoce link if there is a cycle.
+    // add links one after another. Check cycle presence. Revoke link if there is a cycle.
     for (int i = 0; i < links.size(); ++i) {
-        tree.push_back(links[i]);
-        generateAdjMatrix(tree, adjMatrixCoveringTree, size);
+        tree.push_back(links[i]);//add link
         
-        if (cycle(adjMatrixCoveringTree, size)) {
+        generateAdjMatrix(tree, adjMatrixCoveringTree, size);// Check cycle presence
+        
+        if (cycle(adjMatrixCoveringTree, size)) {//Revoke link if there is a cycle
             tree.pop_back();
             cout << links[i].edge1 << "\t" << links[i].edge2 << "\t" << links[i].value;
             cout << " is revoked, for it would create a cycle." << endl;
