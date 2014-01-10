@@ -2,7 +2,7 @@
 //  main.cpp
 //  tp3graphes
 //
-//  Created by Matthieu de La Roche Saint-Andre and Victor Haffreingue on 12/20/13.
+//  Created by Matthieu de La Roche Saint-Andre and Victor Haffreingue on 01/10/2014.
 //
 
 #include <iostream>
@@ -42,14 +42,14 @@ void coveringTree(AdjCell** adjMatrix, int size, vector<vector<AdjCell> > &adjMa
 
 int main(int argc, const char * argv[]) {
     string path;
-//    if (argc == 2) {
-//        path = argv[1];
-//    } else {
-//        cout << "Which file do you want to open ? ";
-//        cin >> path;
-//        cout << endl;
-    //    }
-    path = "/Users/matthieudelaro/Documents/classes/L3/S5/theorie_des_graphes/TP/tp33/Haffreingue-de_La_Roche_Saint_Andre-EFREI-L3-TG-TP3-5.txt";
+    if (argc == 2) {
+        path = argv[1];
+    } else {
+        cout << "Which file do you want to open ? ";
+        cin >> path;
+        cout << endl;
+    }
+//    path = "/Users/matthieudelaro/Documents/classes/L3/S5/theorie_des_graphes/TP/tp33/Haffreingue-de_La_Roche_Saint_Andre-EFREI-L3-TG-TP3-5.txt";
     
     
     int size = 0; //size of adjacency matrix and of Bellman's matrix
